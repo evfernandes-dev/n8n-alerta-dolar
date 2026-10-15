@@ -1,12 +1,12 @@
-# 💵 USD Exchange Rate Alert with n8n
+# USD Exchange Rate Alert with n8n
 
-Automation developed with **n8n** to automatically check the current US dollar exchange rate against the Brazilian real, analyze the value, and perform different actions based on the detected exchange rate.
+Automation built with **n8n** that checks the current US dollar exchange rate against the Brazilian real, analyzes the value, and performs different actions based on the detected rate.
 
 The project uses a public exchange rate API, Google Sheets, and Gmail.
 
 ---
 
-## 🚀 What does this automation do?
+## What this automation does
 
 The workflow works as follows:
 
@@ -15,30 +15,31 @@ The workflow works as follows:
 3. Converts the value returned by the API.
 4. Analyzes the exchange rate using a Switch node.
 5. Depending on the value:
-   - records the exchange rate in a spreadsheet;
-   - or sends an email alert.
+   - records the exchange rate in a spreadsheet; or
+   - sends an email alert.
 
 Workflow overview:
 
-Webhook  
-↓  
-HTTP Request  
-↓  
-USD/BRL Exchange Rate  
-↓  
-Value Conversion  
-↓  
-Switch  
-├── High exchange rate → Google Sheets  
-└── Low exchange rate → Gmail  
+```text
+Webhook
+   ↓
+HTTP Request
+   ↓
+USD/BRL Exchange Rate
+   ↓
+Value Conversion
+   ↓
+Switch
+├── High exchange rate → Google Sheets
+└── Low exchange rate  → Gmail
+```
 
 ---
 
-## 🛠 Technologies Used
+## Technologies used
 
 - n8n
-- REST API
-- HTTP Request
+- REST API / HTTP Request
 - Webhook
 - Google Sheets
 - Gmail
@@ -49,205 +50,152 @@ Switch
 
 ---
 
-## 📊 API Used
+## API used
 
 The automation uses **AwesomeAPI** to retrieve the USD/BRL exchange rate.
 
 Endpoint:
 
+```text
 https://economia.awesomeapi.com.br/json/last/USD-BRL
-
-The API returns the current US dollar exchange rate data.
+```
 
 The workflow uses the `bid` field returned by the API and converts it into a numeric value that can be analyzed by n8n.
 
 ---
 
-## 🧠 Automation Rules
+## Automation rules
 
-After retrieving the data from the API, the workflow creates the field:
+After retrieving the data from the API, the workflow creates the field `valor_convertido`, which is sent to a **Switch** node. Two rules are configured.
 
-`valor_convertido`
-
-This value is sent to a **Switch** node.
-
-Currently, two rules are configured.
-
-### 🔴 Exchange rate above R$ 5.30
+### Exchange rate above R$ 5.30
 
 Condition:
 
-`valor_convertido > 5.30`
+```text
+valor_convertido > 5.30
+```
 
-The exchange rate is sent to the workflow path identified as:
+The value is sent to the workflow path identified as `nao comprar`. In this path, the value is recorded in Google Sheets.
 
-`nao comprar`
-
-In this path, the value is recorded in Google Sheets.
-
-### 🟢 Exchange rate lower than or equal to R$ 5.22
+### Exchange rate lower than or equal to R$ 5.22
 
 Condition:
 
-`valor_convertido <= 5.22`
+```text
+valor_convertido <= 5.22
+```
 
-The exchange rate is sent to:
-
-`comprar muito`
-
-In this case, the user receives an email alert informing them that the US dollar exchange rate is low.
+The value is sent to the path identified as `comprar muito`. In this case, the user receives an email alert informing them that the US dollar exchange rate is low.
 
 ---
 
-## 📁 Project Structure
+## Project structure
 
-n8n-alerta-dolar/  
-├── alerta-dolar.json  
-└── README.md  
+```text
+n8n-alerta-dolar/
+├── alerta-dolar.json   # n8n workflow export
+└── README.md
+```
 
-The main project file is:
-
-`alerta-dolar.json`
-
-It contains the entire n8n workflow structure.
+The main project file is `alerta-dolar.json`. It contains the entire n8n workflow structure.
 
 ---
 
-## 📥 How to Install
+## How to install
 
-### 1. Download the Project
+### 1. Download the project
 
-You can download the project from GitHub using:
+Download the project from GitHub using **Code → Download ZIP**, or clone it with Git:
 
-`Code → Download ZIP`
-
-Or clone it using Git:
-
-`git clone https://github.com/emanuelvitorfn7-gif/n8n-alerta-dolar.git`
+```bash
+git clone https://github.com/evfernandes-dev/n8n-alerta-dolar.git
+```
 
 Then enter the project folder:
 
-`cd n8n-alerta-dolar`
+```bash
+cd n8n-alerta-dolar
+```
 
----
+### 2. Open n8n
 
-## 2. Open n8n
+You need an n8n installation. For a local installation, n8n can usually be accessed at:
 
-You need to have an n8n installation available.
-
-For a local installation, n8n can usually be accessed at:
-
-`http://localhost:5678`
+```text
+http://localhost:5678
+```
 
 You can also use n8n Cloud.
 
----
-
-## 3. Import the Workflow
+### 3. Import the workflow
 
 Inside n8n:
 
 1. Open the workflows section.
 2. Click the workflow menu.
 3. Select the option to import a file.
-4. Choose:
-
-`alerta-dolar.json`
+4. Choose `alerta-dolar.json`.
 
 The workflow will be loaded into your n8n instance.
 
 ---
 
-## 🔑 Configure Your Credentials
+## Configure your credentials
 
-Personal credentials should never be shared through GitHub.
+Personal credentials should never be shared through GitHub. Anyone who imports this project must configure their own accounts.
 
-Anyone who imports this project must configure their own accounts.
+### Google Sheets
 
----
-
-## 📈 Google Sheets
-
-Open the node:
-
-`salva a cotaçao na planilha`
-
-Connect your Google account and select your own spreadsheet.
+Open the node `salva a cotaçao na planilha`, connect your Google account, and select your own spreadsheet.
 
 The spreadsheet can contain two columns:
 
 | date | exchange_rate |
-|------|---------------|
+|---|---|
 | 2026/10/04 18:30 | 5.21 |
 
 Then select the desired spreadsheet and sheet inside the Google Sheets node.
 
----
+### Gmail
 
-## 📧 Gmail
-
-Open the node:
-
-`Send an Email`
-
-Connect your own Gmail account.
-
-Then configure the email address that will receive the alerts.
-
-You can also customize:
-
-- recipient;
-- subject;
-- content;
-- alert message.
+Open the node `Send an Email`, connect your own Gmail account, and configure the address that will receive the alerts. You can also customize the recipient, subject, content, and alert message.
 
 Example message:
 
-**Subject:** USD Exchange Rate
-
-**Message:**
+```text
+Subject: USD Exchange Rate
 
 The US dollar exchange rate is low.
-
 Current exchange rate: R$ 5.21
+```
 
 ---
 
-## 🌐 Webhook
+## Webhook
 
 The workflow starts through a Webhook.
 
-Method:
+- Method: `POST`
+- Configured path: `nova_transaçao`
 
-`POST`
+After activating the workflow, n8n provides a production URL. In a local installation, it may look similar to:
 
-Configured path:
+```text
+http://localhost:5678/webhook/nova_transaçao
+```
 
-`nova_transaçao`
+You can send a POST request to start the workflow. PowerShell example:
 
-After activating the workflow, n8n will provide a production URL.
+```powershell
+Invoke-WebRequest -Method POST -Uri "http://localhost:5678/webhook/nova_transaçao"
+```
 
-In a local installation, it may look similar to:
-
-`http://localhost:5678/webhook/nova_transaçao`
-
-You can send a POST request to start the workflow.
-
-PowerShell example:
-
-`Invoke-WebRequest -Method POST -Uri "http://localhost:5678/webhook/nova_transaçao"`
-
-You can also use:
-
-- Postman
-- Insomnia
-- curl
-- another system
-- another automation
+You can also use Postman, Insomnia, curl, another system, or another automation.
 
 ---
 
-## ▶️ How to Run
+## How to run
 
 After configuring Gmail and Google Sheets:
 
@@ -258,56 +206,46 @@ After configuring Gmail and Google Sheets:
 5. Activate the workflow.
 6. Copy the production Webhook URL.
 7. Send a POST request.
-8. n8n will retrieve the current exchange rate.
-9. The value will be analyzed.
-10. The workflow will execute the corresponding action.
+8. n8n retrieves the current exchange rate.
+9. The value is analyzed.
+10. The workflow executes the corresponding action.
 
 Expected workflow:
 
-Webhook  
-↓  
-HTTP Request  
-↓  
-USD to BRL Conversion  
-↓  
-Switch  
-↓  
-Decision  
-├── Google Sheets  
-└── Gmail  
+```text
+Webhook
+   ↓
+HTTP Request
+   ↓
+USD to BRL Conversion
+   ↓
+Switch
+   ↓
+Decision
+├── Google Sheets
+└── Gmail
+```
 
 ---
 
-## 🔧 Customizing the Values
+## Customizing the values
 
-You can change the values used to determine when each action should be executed.
-
-Open the node:
-
-`cotaçao do dolar`
-
-Then change the conditions.
+You can change the thresholds that decide which action is executed. Open the node `cotaçao do dolar` and change the conditions.
 
 For example:
 
-Buy:
+- Buy: `<= 5.00`
+- Do not buy: `> 5.50`
 
-`<= 5.00`
-
-Do not buy:
-
-`> 5.50`
-
-This allows each user to customize the automation according to their own project goals.
+This allows each user to adapt the automation to their own goals.
 
 ---
 
-## 🔄 Other Currencies
+## Other currencies
 
-The project can also be adapted to retrieve other currency pairs.
-
-Examples:
+The project can also be adapted to retrieve other currency pairs, for example:
 
 - EUR-BRL
 - BTC-BRL
-- USD-B
+
+The change is made by adjusting the pair used in the HTTP Request to the AwesomeAPI.
